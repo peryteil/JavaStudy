@@ -1,28 +1,55 @@
 package view;
 
-import dto.LoginDto;
 import service.UserService;
+import vendingMachineV3.dto.LoginDto;
+import vendingMachineV3.dto.UserDto;
+//import vendingMachineV3.service.UserService;
+import vendingMachineV3.view.UserViewInterface;
 
+
+import java.time.LocalDateTime;
 import java.util.Scanner;
 
-public class UserView implements UserViewInterface{
-
-    UserService userService = new UserService();
+public class UserView implements UserViewInterface {
     Scanner sc = new Scanner(System.in);
+    UserService userService = new UserService();
 
 
 
-    public void register() {
-        int result = userService.register();
-        if (result > 0){
-            System.out.println("회원가입 성공");
-        }else System.out.println("회원가입 실패");
+    @Override
+    public boolean registerView() {
+        UserDto userDto = new UserDto();
+
+        System.out.println("회원가입 페이지 입니다.\n" +
+                "아이디를 입력해주세요.");
+        userDto.setUserId(sc.next());
+        System.out.println("비밀번호를 입력해주세요.");
+        userDto.setPwd(sc.next());
+        System.out.println("이름을 입력해주세요.");
+        userDto.setUserName(sc.next());
+        System.out.println("전화번호를 입력해주세요.");
+        userDto.setTelNum(sc.next());
+        userDto.setUserMoney(0);
+        userDto.setCreatedAt(LocalDateTime.now());
+
+        int 결과 = userService.registerService(userDto);
+        if (결과 > 0) {
+            System.out.println("회원가입을 축하합니다.");
+            return true;
+        } else {
+            System.out.println("회원가입 실패");
+            return false;
+        }
     }
+    String as;
+    LoginDto loginDto;
 
-    public LoginDto login() {
+    @Override
+    public LoginDto loginView() {
+
         System.out.println("로그인 페이지 입니다.\n" +
                 "아이디를 입력해주세요.");
-        String userId =sc.next() ;
+        String userId = sc.next();
         System.out.println("비밀번호를 입력해주세요.");
         String pwd = sc.next();
         LoginDto loginDto = new LoginDto(userId,pwd);
@@ -34,8 +61,10 @@ public class UserView implements UserViewInterface{
             System.out.println("로그인 실패!");
             return null;
         }
+
     }
 
+    @Override
     public void userBuyView(LoginDto loginDto) {
         int menuNum = 0;
         while (menuNum > 0 || menuNum <= 4){

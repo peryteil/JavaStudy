@@ -1,4 +1,4 @@
-package dto;
+package vendingMachineV3.dto;
 
 public class LoginDto {
     String userId;
@@ -8,6 +8,10 @@ public class LoginDto {
     public LoginDto(String userId, String pwd) {
         this.userId = userId;
         this.pwd = pwd;
+    }
+
+    public LoginDto(String userMoney) {
+        this.userMoney = userMoney;
     }
 
     public String getUserId() {
@@ -24,13 +28,5 @@ public class LoginDto {
 
     public void setPwd(String pwd) {
         this.pwd = pwd;
-    }
-
-    public String getUserMoney() {
-        return userMoney;
-    }
-
-    public void setUserMoney(String userMoney) {
-        this.userMoney = userMoney;
     }
 }

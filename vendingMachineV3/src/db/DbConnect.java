@@ -1,4 +1,4 @@
-package db;
+package vendingMachineV3.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,7 +11,7 @@ public class DbConnect {
     public static Connection getConnection() {
         if (dbConn == null) {
             String dbDriver = "com.mysql.cj.jdbc.Driver";
-            String dbUrl = "jdbc:mysql://localhost:3306/vending_machine";
+            String dbUrl = "jdbc:mysql://localhost:3306/vMachine_db";
             String dbUser = "root";
             String dbPassword = "1111";
 

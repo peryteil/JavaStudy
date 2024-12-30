@@ -1,47 +1,40 @@
 package repository;
 
-import db.DbConnect;
-import dto.LoginDto;
-import dto.ProductDto;
-import dto.UserDto;
+import vendingMachineV3.db.DbConnect;
+import vendingMachineV3.dto.LoginDto;
+import vendingMachineV3.dto.ProductDto;
+import vendingMachineV3.dto.UserDto;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class UserRepository {
+public class UserRepository  {
     Connection dbConn = DbConnect.getConnection();
+    vendingMachineV3.repository.AdminRepository adminRepository;
+
+    PreparedStatement psmt = null;
     String sql;
-    PreparedStatement psmt;
+    int result = 0; //쿼리 실행 결과를 담을 변수(성공 : 양수, 실패 : 0)
 
-    public int register(UserDto dto) {
-
-        // DB에 저장하기
+    public int register(UserDto userDto) {
+        System.out.println("회원가입 레포지토리");
         try {
-            sql = "INSERT INTO user (u_userId, u_password, u_name, u_phone, u_money," +
-                    "createdAt) ";
-            sql = sql + "VALUES (?, ?, ?,?,?,?)";
+            sql = "INSERT INTO userdto(userId, pwd, userName, telNum, userMoney, createdAt) ";
+            sql = sql + "VALUES(?,?,?,?,?,?)";
             psmt = dbConn.prepareStatement(sql);
-            // 전달할 인자값을 psmt 에 추가
-            psmt.setString(1, dto.getU_userId());
-            psmt.setString(2, dto.getU_password());
-            psmt.setString(3, dto.getU_name());
-            psmt.setString(4, dto.getU_phone());
-            psmt.setInt(5,dto.getU_money());
-            psmt.setTimestamp(6, Timestamp.valueOf(dto.getCreatedAt()));
+            //psmt에 값추가
+            psmt.setString(1, userDto.getUserId());
+            psmt.setString(2, userDto.getPwd());
+            psmt.setString(3, userDto.getUserName());
+            psmt.setString(4, userDto.getTelNum());
+            psmt.setInt(5, userDto.getUserMoney());
+            psmt.setTimestamp(6, Timestamp.valueOf(userDto.getCreatedAt()));
 
-            // DB 에 저장 요청
-            int result = psmt.executeUpdate();
-            if (result > 0) {
-                System.out.println("회원가입 완료");
-                return result;
-            }else {
-                System.out.println("회원 가입 실패");
-            }
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+            int 결과 = psmt.executeUpdate();
+            return 결과;
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return 0;
@@ -53,7 +46,7 @@ public class UserRepository {
         String userId = loginDto.getUserId();
         String pwd = loginDto.getPwd();
 
-        sql = "SELECT u_userId, u_password FROM user WHERE u_userId = ?";
+        sql = "SELECT userId, pwd FROM userdto WHERE userId = ?";
 
         ResultSet rs = null;
 
@@ -62,7 +55,7 @@ public class UserRepository {
             psmt.setString(1, userId);
             rs = psmt.executeQuery();
             if (rs.next()) {
-                String rsPwd = rs.getString("u_password");
+                String rsPwd = rs.getString("pwd");
                 if (!rsPwd.equals(pwd)) {
                     System.out.println("비밀번호 확인해주세요");
                     return 0;
@@ -84,19 +77,33 @@ public class UserRepository {
                 e.printStackTrace();
             }
         }
+//        try {
+//            psmt = dbConn.prepareStatement(sql);
+//            rs= psmt.executeQuery();
+//
+//            if(!(rs.getString("userId").equals(userId))){
+//                System.out.println("아이디를 확인하세요.");
+//            } else if(!(rs.getString("pwd").equals(pwd))){
+//                System.out.println("비밀번호를 확인하세요.");
+//                return 0;
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+
     }
 
-    public int insertCoin(LoginDto loginDto, int i) {
+    public int insertCoin(LoginDto loginDto, int cMoney) {
         System.out.println("돈충전 레포");
         String loginId = loginDto.getUserId();
 
 
-        sql = "UPDATE user SET u_money = u_money + ? WHERE user = ?";
+        sql = "UPDATE userdto SET userMoney = userMoney + ? WHERE userId = ?";
 
 
         try {
             psmt = dbConn.prepareStatement(sql);
-            psmt.setInt(1, i);
+            psmt.setInt(1, cMoney);
             psmt.setString(2, loginId);
 
             int rowsAffected = psmt.executeUpdate();
@@ -106,7 +113,11 @@ public class UserRepository {
                 System.out.println("충전 실패: 해당 userId가 존재하지 않음.");
             }
             return rowsAffected;
-        }  catch (Exception e) {
+        } catch (SQLException e) {
+            // SQL 예외 처리
+            System.out.println("SQL Error: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
             // 기타 예외 처리
             System.out.println("Unexpected Error: " + e.getMessage());
             e.printStackTrace();
@@ -117,7 +128,7 @@ public class UserRepository {
     public int returnMoney(LoginDto loginDto) {
         String loginId = loginDto.getUserId();
 
-        sql = "UPDATE user SET u_money = 0 WHERE u_userId = ?";
+        sql = "UPDATE userdto SET userMoney = 0 WHERE userId = ?";
         try {
             psmt = dbConn.prepareStatement(sql);
             psmt.setString(1, loginId);
@@ -145,7 +156,7 @@ public class UserRepository {
         List<ProductDto> productDtoList = new ArrayList<>();
         int uId = 0;
 
-        String userSql = "SELECT uId FROM user to WHERE user = ?";
+        String userSql = "SELECT uId FROM userdto WHERE userId = ?";
         try (PreparedStatement psmtt = dbConn.prepareStatement(userSql)) {
             psmtt.setString(1,loginId);
             ResultSet rs = psmtt.executeQuery();
@@ -179,8 +190,8 @@ public class UserRepository {
         System.out.println("원하는 제품명을 입력하세요.");
         String item = sc.next();
         for (ProductDto productDto : productDtoList) {
-            if (productDto.getProuductName().equals(item)) {
-                String sql2 = "UPDATE user to SET u_money = u_money - ? WHERE userId = ?";
+            if (productDto.getProductName().equals(item)) {
+                String sql2 = "UPDATE userdto SET userMoney = userMoney - ? WHERE userId = ?";
                 try (PreparedStatement psmt2 = dbConn.prepareStatement(sql2)) {
                     psmt2.setInt(1, productDto.getPrice());
                     psmt2.setString(2, loginId);
@@ -196,9 +207,9 @@ public class UserRepository {
                 }
 
                 // 재고 차감
-                String sql3 = "UPDATE product to SET p_stock = p_stock - 1 WHERE productName = ?";
+                String sql3 = "UPDATE productdto SET stock = stock - 1 WHERE productName = ?";
                 try (PreparedStatement psmt3 = dbConn.prepareStatement(sql3)) {
-                    psmt3.setString(1, productDto.getProuductName());
+                    psmt3.setString(1, productDto.getProductName());
                     int stockAffected = psmt3.executeUpdate(); // 재고 감소 업데이트 실행
                     if (stockAffected > 0) {
                         System.out.println("재고가 성공적으로 차감되었습니다.");
@@ -226,7 +237,39 @@ public class UserRepository {
         }
 
         return 0;
+    }
 
+    public UserDto findById(int uId) {
+//        System.out.println("[PhoneBookRepository]-findById");
+        UserDto dto = new UserDto();
+        ResultSet rs = null;
+
+        sql = "SELECT * FROM userdto WHERE uId = ?";
+        try {
+            psmt = dbConn.prepareStatement(sql);
+            psmt.setLong(1, uId);
+            rs = psmt.executeQuery();
+
+            if (rs != null) {
+                while (rs.next()) {
+                    dto.setuId(rs.getInt("uId"));
+                    dto.setUserId(rs.getString("userId"));
+                    dto.setPwd(rs.getString("pwd"));
+                    dto.setUserName(rs.getString("userName"));
+                    dto.setTelNum(rs.getString("telNum"));
+                    dto.setUserMoney(rs.getInt("userMoney"));
+                    dto.setCreatedAt(rs.getTimestamp("createdAt")
+                            .toLocalDateTime());
+                    if (rs.getTimestamp("updateAt") != null) {
+                        dto.setUpdateAt(rs.getTimestamp("updateAt")
+                                .toLocalDateTime());
+                    }
+                }
+            }
+            return dto;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
-

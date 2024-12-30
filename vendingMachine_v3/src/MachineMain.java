@@ -1,3 +1,4 @@
+import dto.LoginDto;
 import view.AdminView;
 import view.UserView;
 
@@ -16,10 +17,21 @@ public class MachineMain {
                 switch (scanner.nextInt()) {
                     case 1:
                         userview.register();
+                        break;
                     case 2:
-                        userview.login();
-                    case 3:
-                        return;
+                        LoginDto loginDto = userview.login();
+                        if(loginDto.getUserId().equals("admin")){
+                            adminView.test();
+                            break;
+                        }
+                        if (loginDto == null) {
+                            System.out.println("로그인이 필요합니다");
+                        } else {
+                           userview.userBuyView(loginDto);
+                        }
+                        break;
+                    default:
+                        System.out.println("잘못된 선택입니다. 1, 2, 3번 중 하나를 입력해주세요.");
                 }
             }
         }
