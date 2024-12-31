@@ -91,7 +91,7 @@ public class UserRepository {
         String loginId = loginDto.getUserId();
 
 
-        sql = "UPDATE user SET u_money = u_money + ? WHERE user = ?";
+        sql = "UPDATE user SET u_money = u_money + ? WHERE u_userId = ?";
 
 
         try {
@@ -145,7 +145,7 @@ public class UserRepository {
         List<ProductDto> productDtoList = new ArrayList<>();
         int uId = 0;
 
-        String userSql = "SELECT uId FROM user to WHERE user = ?";
+        String userSql = "SELECT uId FROM user WHERE u_userId = ?";
         try (PreparedStatement psmtt = dbConn.prepareStatement(userSql)) {
             psmtt.setString(1,loginId);
             ResultSet rs = psmtt.executeQuery();
@@ -158,16 +158,16 @@ public class UserRepository {
             e.printStackTrace();
         }
 
-        String productSql = "SELECT pId, productName, price, stock, status FROM productdto";
+        String productSql = "SELECT p_id, p_name, p_price, p_stock, p_status FROM product";
         try (PreparedStatement psmt1 = dbConn.prepareStatement(productSql);
              ResultSet rs = psmt1.executeQuery()) {
             while (rs.next()) {
                 ProductDto productDto = new ProductDto();
-                productDto.setpId(rs.getInt("pId"));
-                productDto.setProductName(rs.getString("productName"));
-                productDto.setPrice(rs.getInt("price"));
-                productDto.setStock(rs.getInt("stock"));
-                productDto.setStatus(rs.getBoolean("status"));
+                productDto.setpId(rs.getInt("p_id"));
+                productDto.setProuductName(rs.getString("p_name"));
+                productDto.setPrice(rs.getInt("p_price"));
+                productDto.setStock(rs.getInt("p_stock"));
+                productDto.setStatus(rs.getBoolean("p_status"));
                 productDtoList.add(productDto);
             }
             productDtoList.forEach(x -> System.out.println(x));
@@ -180,7 +180,7 @@ public class UserRepository {
         String item = sc.next();
         for (ProductDto productDto : productDtoList) {
             if (productDto.getProuductName().equals(item)) {
-                String sql2 = "UPDATE user to SET u_money = u_money - ? WHERE userId = ?";
+                String sql2 = "UPDATE user SET u_money = u_money - ? WHERE u_userId = ?";
                 try (PreparedStatement psmt2 = dbConn.prepareStatement(sql2)) {
                     psmt2.setInt(1, productDto.getPrice());
                     psmt2.setString(2, loginId);
@@ -196,7 +196,7 @@ public class UserRepository {
                 }
 
                 // 재고 차감
-                String sql3 = "UPDATE product to SET p_stock = p_stock - 1 WHERE productName = ?";
+                String sql3 = "UPDATE product SET p_stock = p_stock - 1 WHERE p_name = ?";
                 try (PreparedStatement psmt3 = dbConn.prepareStatement(sql3)) {
                     psmt3.setString(1, productDto.getProuductName());
                     int stockAffected = psmt3.executeUpdate(); // 재고 감소 업데이트 실행
@@ -208,7 +208,7 @@ public class UserRepository {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                String sql4 = "INSERT INTO sales(pId, uId, purchaseTime) VALUES(?,?,NOW())";
+                String sql4 = "INSERT INTO sales(p_id, u_userId, s_date) VALUES(?,?,NOW())";
                 try (PreparedStatement psmt4 = dbConn.prepareStatement(sql4)) {
                     psmt4.setInt(1,productDto.getpId());
                     psmt4.setInt(2,uId);

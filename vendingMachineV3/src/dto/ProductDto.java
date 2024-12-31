@@ -77,6 +77,7 @@ public class ProductDto {
     }
 
     public void setProductName(String productName) {
+
         this.productName = productName;
     }
 
@@ -85,14 +86,17 @@ public class ProductDto {
     }
 
     public void setPrice(int price) {
+
         this.price = price;
     }
 
     public int getStock() {
+
         return stock;
     }
 
     public void setStock(int stock) {
+
         this.stock = stock;
     }
 }

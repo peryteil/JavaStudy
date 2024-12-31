@@ -1,8 +1,8 @@
-package service;
+package vendingMachineV3.service;
 
 import vendingMachineV3.dto.LoginDto;
 import vendingMachineV3.dto.UserDto;
-import repository.UserRepository;
+import vendingMachineV3.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +25,6 @@ public class UserService {
         return userRepository.insertCoin(loginDto,sc.nextInt());
     }
     public int returnMoney(LoginDto loginDto){
-
         return userRepository.returnMoney(loginDto);
     }
 

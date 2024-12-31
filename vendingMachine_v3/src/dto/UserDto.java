@@ -12,6 +12,18 @@ public class UserDto {
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 
+    public String toString() {
+        return "UserDto{" +
+                "uId=" + uId +
+                ", u_userId='" + u_userId + '\'' +
+                ", u_name=" + u_name +
+                ", u_phone=" + u_phone +
+                ", u_money=" + u_money +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
+
     public UserDto() {
     }
 

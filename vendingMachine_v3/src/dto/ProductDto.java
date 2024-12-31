@@ -10,8 +10,7 @@ public class ProductDto {
     public ProductDto() {
     }
 
-    public ProductDto(int pId, String prouductName, int price, int stock, boolean status) {
-        this.pId = pId;
+    public ProductDto(String prouductName, int price, int stock, boolean status) {
         this.prouductName = prouductName;
         this.price = price;
         this.stock = stock;
@@ -50,7 +49,7 @@ public class ProductDto {
         this.stock = stock;
     }
 
-    public boolean isStatus() {
+    public boolean getStatus() {
         return status;
     }
 
@@ -58,6 +57,15 @@ public class ProductDto {
         this.status = status;
     }
 
-    public void setProductName(String productName) {
+    @Override
+    public String toString() {
+        return "ProductDto{" +
+                "pId=" + pId +
+                ", prouductName='" + prouductName + '\'' +
+                ", price=" + price +
+                ", stock=" + stock +
+                ", status=" + status +
+                '}';
     }
+
 }

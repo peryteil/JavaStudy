@@ -1,13 +1,14 @@
-package view;
+package vendingMachineV3.view;
 
-import service.UserService;
 import vendingMachineV3.dto.LoginDto;
 import vendingMachineV3.dto.UserDto;
-//import vendingMachineV3.service.UserService;
-import vendingMachineV3.view.UserViewInterface;
+import vendingMachineV3.repository.AdminRepository;
+import vendingMachineV3.service.AdminService;
+import vendingMachineV3.service.UserService;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Scanner;
 
 public class UserView implements UserViewInterface {
@@ -32,8 +33,8 @@ public class UserView implements UserViewInterface {
         userDto.setUserMoney(0);
         userDto.setCreatedAt(LocalDateTime.now());
 
-        int 결과 = userService.registerService(userDto);
-        if (결과 > 0) {
+        int result = userService.registerService(userDto);
+        if (result > 0) {
             System.out.println("회원가입을 축하합니다.");
             return true;
         } else {
@@ -41,11 +42,28 @@ public class UserView implements UserViewInterface {
             return false;
         }
     }
-    String as;
-    LoginDto loginDto;
+
 
     @Override
     public LoginDto loginView() {
+//        List<UserDto> userDtoList = adminRepository.getAllUserList();
+//        System.out.println("로그인 페이지 입니다.\n" +
+//                "아이디를 입력해주세요.");
+//
+//        for (UserDto userDto : userDtoList) {
+//            if (userDto.getUserId().equals(sc.next())){     //아이디가 userDtoList에 있는지 확인
+//                System.out.println("비밀번호를 입력해주세요.");
+//                if(userDto.getPwd().equals(sc.next())){     //비번이 있는지 확인
+//                    System.out.println("로그인 성공!");
+//                    return true;
+//                }else {
+//                    System.out.println("비밀번호를 확인해주세요.");
+//                }
+//            }else {     //아이디가 없으면
+//                System.out.println("아이디를 확인해주세요.");
+//            }
+//        }
+//        return false;
 
         System.out.println("로그인 페이지 입니다.\n" +
                 "아이디를 입력해주세요.");
